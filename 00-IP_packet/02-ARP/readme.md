@@ -9,3 +9,5 @@
 ## If destination IP is not in the same network, we send the packet to the default gateway. First Use ARP to get the MAC address of the gateway
 
 ## 🛑 ARP is not used between routers on the internet
+
+<img src="../images/arp_diagram.png" width=600>

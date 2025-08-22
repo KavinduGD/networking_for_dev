@@ -1,6 +1,6 @@
 # Internet protocol (IP)
 
-![IP Packet Structure](../images/ip_packet_structure.png)
+![IP Packet Structure](./images/ip_packet_structure.png)
 
 ## **Version (4 bits)**
 
