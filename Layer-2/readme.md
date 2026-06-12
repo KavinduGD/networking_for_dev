@@ -2,7 +2,7 @@
 
 <img src="./images/image1.png" width="1000px" />
 
-- It sits just above the physical layer and does two big jobs: getting data reliably from one device to the next device on the same network, and controlling who gets to use the shared wire at any given moment.
+- It sits just above the physical layer and does two big jobs: getting data reliably from one device to the next device on the **same network**, and controlling who gets to use the shared wire at any given moment.
 
 ## What Layer 2 does
 
@@ -52,3 +52,5 @@ A useful rule of thumb:
 - Every switch port → creates a new, isolated collision domain
 
 ### But on the PC side, ARP is what fills in that destination MAC before the frame is even created. The switch only handles forwarding after the frame arrives.
+
+### 🛑 Layer 2 frame header gets dropped and recreated at every hop, while the Layer 3 packet header stays mostly intact.
