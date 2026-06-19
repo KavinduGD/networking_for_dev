@@ -54,3 +54,112 @@ A useful rule of thumb:
 ### But on the PC side, ARP is what fills in that destination MAC before the frame is even created. The switch only handles forwarding after the frame arrives.
 
 ### 🛑 Layer 2 frame header gets dropped and recreated at every hop, while the Layer 3 packet header stays mostly intact.
+
+---
+
+## How Layer 2 Solves Layer 1's Limitations
+
+### Problem 1 — No Intelligence / No Addressing
+
+**Layer 1:** Hub sends every bit out of every port blindly.
+
+**Layer 2 fix → MAC Addressing**
+
+Every device gets a unique **48-bit MAC address** burned into its NIC. Layer 2 wraps bits into **frames** that contain:
+
+```
+| Destination MAC | Source MAC | Type | Payload | FCS |
+```
+
+A **switch** (Layer 2 device) reads the destination MAC and forwards the frame **only to the correct port** — not everyone. It builds a **MAC address table** by learning which MAC lives on which port over time.
+
+```
+Switch MAC Table:
+Port 1 → AA:BB:CC:11:22:33  (PC A)
+Port 2 → AA:BB:CC:44:55:66  (PC B)
+Port 3 → AA:BB:CC:77:88:99  (PC C)
+```
+
+So instead of shouting at everyone, Layer 2 **delivers to exactly the right device**.
+
+### Problem 2 — No Error Detection
+
+**Layer 1:** Corrupt bits go completely unnoticed.
+
+**Layer 2 fix → FCS / CRC (Frame Check Sequence)**
+
+When a frame is created, Layer 2 runs a **CRC (Cyclic Redundancy Check)** calculation on the data and appends the result as an **FCS field** at the end of the frame:
+
+```
+Sender:   Data → CRC calculation → appends FCS value
+Receiver: recalculates CRC on arrival → compares with FCS
+          ✓ Match   → frame accepted
+          ✗ Mismatch → frame DROPPED (corruption detected)
+```
+
+Layer 2 doesn't _fix_ the error — it detects and **discards** corrupted frames. Retransmission is then handled by Layer 4 (TCP).
+
+### Problem 3 — Collisions
+
+**Layer 1:** Two devices transmit at the same time → signals collide → data destroyed.
+
+**Layer 2 fix → CSMA/CD + Switches**
+
+Layer 2 introduced **CSMA/CD** (Carrier Sense Multiple Access with Collision Detection) for shared media:
+
+```
+1. CARRIER SENSE   → listen before transmitting
+                     "Is anyone else talking?"
+2. MULTIPLE ACCESS → all devices share the medium
+3. COLLISION DETECT → if collision occurs, stop immediately
+                      send a JAM signal to alert all devices
+                      wait a random backoff time, then retry
+```
+
+But the **real solution** was replacing hubs with **switches**:
+
+|              | Hub (Layer 1)            | Switch (Layer 2)                     |
+| ------------ | ------------------------ | ------------------------------------ |
+| Domain       | One big collision domain | Each port = its own collision domain |
+| Transmission | Half-duplex              | Full-duplex                          |
+| Collisions   | Constant                 | Eliminated                           |
+| Intelligence | None                     | MAC table, frame forwarding          |
+
+With a switch, PC A and PC B can transmit **simultaneously** without collision because each port is its own dedicated segment.
+
+### Big Picture
+
+```
+Layer 1 Problem          Layer 2 Solution
+─────────────────────────────────────────────
+No addressing       →    MAC addresses + frames
+No error detection  →    CRC / FCS check
+Collisions          →    CSMA/CD + switches
+```
+
+Layer 2 essentially gave the network **identity, integrity, and order** — the three things Layer 1 completely lacked.
+
+---
+
+## Limitations of Layer 2 — Data Link Layer
+
+Layer 2 solved Layer 1's problems but introduced its own limitations:
+
+### 1. No Inter-Network Communication
+
+Layer 2 only works **within the same network (LAN)**. MAC addresses have no concept of networks — they are flat, local identifiers. A switch cannot forward a frame to a device on a **different network**. For that you need a router (Layer 3).
+
+```
+PC A (192.168.1.10) ──── Switch ──── PC B (192.168.1.20)  ✓ works
+PC A (192.168.1.10) ──── Switch ──── PC C (10.0.0.5)      ✗ can't reach
+```
+
+### 2. No Logical Addressing
+
+MAC addresses are **hardware-burned** and have no logical meaning. You cannot tell from a MAC address:
+
+- Which country/city a device is in
+- Which organization it belongs to
+- Which network segment it's on
+
+IP addresses (Layer 3) solve this by being **hierarchical and routable**.
