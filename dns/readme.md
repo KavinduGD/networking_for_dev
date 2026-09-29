@@ -45,3 +45,68 @@ these are the authoritative nameservers for your domain.
       ↓
 6. Returns the actual DNS record
 ```
+
+---
+
+## DNS Records
+
+1. **A Record**: Maps a domain name to an IPv4 address.
+
+2. **AAAA Record**: Maps a domain name to an IPv6 address.
+
+3. **CNAME Record**: Maps a domain name to another domain name (alias).
+
+4. **MX Record**: Specifies the mail servers responsible for receiving email on behalf of a domain.
+
+```
+example.com       MX  10   mail.example.com
+mail.example.com  A        192.168.1.10
+```
+
+You can have multiple mail servers:
+
+```
+example.com   MX   10   mail1.example.com
+example.com   MX   20   mail2.example.com
+```
+
+```
+Try mail1 first
+     ↓
+If unavailable
+     ↓
+Try mail2
+```
+
+5. **SOA Record**: Contains administrative information about the domain, such as the primary nameserver, email of the domain administrator, and other metadata.
+
+6. **TXT record**: Lets an admin store text notes in the record. These records are often used for email security.
+
+---
+
+### TTL (Time to Live)
+
+It tells DNS resolvers (such as your ISP's DNS server or public DNS servers) how long they can cache a DNS record before they must query the authoritative DNS server again.
+
+#### Low TTL (e.g., 60–300 seconds)
+
+Pros
+
+- Changes propagate more quickly.
+- Useful before planned migrations or failovers.
+
+Cons
+
+- More DNS queries to your authoritative DNS servers.
+- Slightly higher DNS lookup traffic.
+
+#### High TTL (e.g., 86400 seconds = 24 hours)
+
+Pros
+
+- Fewer DNS lookups.
+- Better performance and lower DNS infrastructure load.
+
+Cons
+
+- DNS changes take longer to be seen globally.
